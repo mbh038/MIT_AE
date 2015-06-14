@@ -52,6 +52,74 @@ gtamax<-mvt %>%
         arrange(-n)
 gtamax
 
+#2.2
+DateConvert = as.Date(strptime(mvt$Date, "%m/%d/%y %H:%M"))
+median(DateConvert)
+
+#2.3
+mvt$Month = months(DateConvert)
+mvt$Weekday = weekdays(DateConvert)
+mvt$Date = DateConvert
+
+sort(table(mvt$Month))
+
+#2.4
+sort(table(mvt$Weekday))
+
+#2.5
+hist(mvt$Date, breaks=100)
+
+#3.2
+boxplot(Date~Arrest,mvt)
+
+#3.3
+year<-2001
+sum(mvt$Arrest==TRUE & mvt$Year == year)/
+        table(mvt$Year)[match(year,names(table(mvt$Year)))]
+
+
+#3.4
+year<-2007
+sum(mvt$Arrest==TRUE & mvt$Year == year)/
+        table(mvt$Year)[match(year,names(table(mvt$Year)))]
+
+#3.5
+year<-2012
+sum(mvt$Arrest==TRUE & mvt$Year == year)/
+        table(mvt$Year)[match(year,names(table(mvt$Year)))]
+
+#4.1
+tail(sort(table(mvt$LocationDescription)))
+
+#4.2
+Top5<-subset(mvt,LocationDescription == "STREET" |
+                     LocationDescription == "PARKING LOT/GARAGE(NON.RESID.)" |
+                     LocationDescription == "ALLEY" |
+                     LocationDescription == "GAS STATION" |
+                     LocationDescription == "DRIVEWAY - RESIDENTIAL")
+nrow(Top5)
+
+#4.3
+table(Top5$LocationDescription,Top5$Arrest==TRUE)[,2]/
+        (table(Top5$LocationDescription,Top5$Arrest==TRUE)[,1]
+         +table(Top5$LocationDescription,Top5$Arrest==TRUE)[,2])
+
+#4.4
+worstdays<-Top5 %>%
+        filter(LocationDescription=="GAS STATION") %>%
+        group_by(Weekday) %>%
+        count(Weekday) %>%
+        arrange(-n)
+worstdays
+
+#4.5
+bestdays<-Top5 %>%
+        filter(LocationDescription=="DRIVEWAY - RESIDENTIAL") %>%
+        group_by(Weekday) %>%
+        count(Weekday) %>%
+        arrange(n)
+bestdays
+
 ## DEMOGRAPHICS AND EMPLOYMENT IN THE UNITED STATES 
 
 # Download data
