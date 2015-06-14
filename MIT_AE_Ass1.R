@@ -120,6 +120,119 @@ bestdays<-Top5 %>%
         arrange(n)
 bestdays
 
+## STOCK DYNAMICS
+
+# download data if not yet already done so, then load into R
+
+#IBM
+if(!file.exists("./data/IBMStock.csv")){        
+        fileURL<-"https://courses.edx.org/asset-v1:MITx+15.071x_2a+2T2015+type@asset+block/IBMStock.csv"
+        download.file(fileURL,destfile="./data/IBMStock.csv")
+}
+IBM<-read.csv("./data/IBMStock.csv",stringsAsFactors=FALSE)
+
+# GE
+if(!file.exists("./data/GEStock.csv")){        
+        fileURL<-"https://courses.edx.org/asset-v1:MITx+15.071x_2a+2T2015+type@asset+block/GEStock.csv"
+        download.file(fileURL,destfile="./data/GEStock.csv")
+}
+GE<-read.csv("./data/GEStock.csv",stringsAsFactors=FALSE)
+
+# ProcterGamble
+if(!file.exists("./data/ProcterGambleStock.csv")){        
+        fileURL<-"https://courses.edx.org/asset-v1:MITx+15.071x_2a+2T2015+type@asset+block/ProcterGambleStock.csv"
+        download.file(fileURL,destfile="./data/ProcterGambleStock.csv")
+}
+ProcterGamble<-read.csv("./data/ProcterGambleStock.csv",stringsAsFactors=FALSE)
+
+# Coca Cola
+if(!file.exists("./data/CocaColaStock.csv")){        
+        fileURL<-"https://courses.edx.org/asset-v1:MITx+15.071x_2a+2T2015+type@asset+block/CocaColaStock.csv"
+        download.file(fileURL,destfile="./data/CocaColaStock.csv")
+}
+CocaCola<-read.csv("./data/CocaColaStock.csv",stringsAsFactors=FALSE)
+
+# Boeing
+if(!file.exists("./data/BoeingStock.csv")){        
+        fileURL<-"https://courses.edx.org/asset-v1:MITx+15.071x_2a+2T2015+type@asset+block/BoeingStock.csv"
+        download.file(fileURL,destfile="./data/BoeingStock.csv")
+}
+Boeing<-read.csv("./data/BoeingStock.csv",stringsAsFactors=FALSE)
+
+#1.1
+IBM$Date = as.Date(IBM$Date, "%m/%d/%y")
+GE$Date = as.Date(GE$Date, "%m/%d/%y")
+CocaCola$Date = as.Date(CocaCola$Date, "%m/%d/%y")
+ProcterGamble$Date = as.Date(ProcterGamble$Date, "%m/%d/%y")
+Boeing$Date = as.Date(Boeing$Date, "%m/%d/%y")
+
+#1.2
+IBM[1,]
+GE[1,]
+
+#1.3
+IBM[nrow(IBM),]
+GE[nrow(GE),]
+
+#1.4
+mean(IBM$StockPrice)
+
+#1.5
+min(GE$StockPrice)
+
+#1.6
+max(CocaCola$StockPrice)
+
+#1.7
+median(Boeing$StockPrice)
+
+#1.7
+sd(ProcterGamble$StockPrice)
+
+#2.1
+plot(x=CocaCola$Date,y=CocaCola$StockPrice,"l",xlab="Date",ylab="Stock Price",col="red")
+
+#2.2
+lines(ProcterGamble$Date, ProcterGamble$StockPrice,col="blue")
+abline(v=as.Date(c("2000-03-01")), lwd=2)
+
+#2.3
+abline(v=as.Date(c("1983-06-01")), lwd=2)
+
+#3.1
+plot(CocaCola$Date[301:432], 
+     CocaCola$StockPrice[301:432],
+     type="l", col="red", ylim=c(0,210))
+
+lines(ProcterGamble$Date[301:432], ProcterGamble$StockPrice[301:432],col="blue")
+lines(GE$Date[301:432], GE$StockPrice[301:432],col="green")
+lines(IBM$Date[301:432], IBM$StockPrice[301:432],col="purple")
+lines(Boeing$Date[301:432], Boeing$StockPrice[301:432],col="black")
+
+abline(v=as.Date(c("2000-03-01")), lwd=2)
+
+#3.3
+abline(v=as.Date(c("1997-09-01")), lwd=1)
+abline(v=as.Date(c("1997-11-01")), lwd=1)
+
+#3.4
+abline(v=as.Date(c("2004-01-01")), lwd=1)
+
+#4.1
+print("IBM")
+sort(tapply(IBM$StockPrice,months(IBM$Date),mean)/mean(IBM$StockPrice))
+
+
+#4.2
+print("GE")
+sort(tapply(GE$StockPrice,months(GE$Date),mean)/mean(GE$StockPrice))
+print("ProcterGamble")
+sort(tapply(ProcterGamble$StockPrice,months(ProcterGamble$Date),mean)/mean(ProcterGamble$StockPrice))
+print("Boeing")
+sort(tapply(Boeing$StockPrice,months(Boeing$Date),mean)/mean(Boeing$StockPrice))
+print("CocaCola")
+sort(tapply(CocaCola$StockPrice,months(CocaCola$Date),mean)/mean(CocaCola$StockPrice))
+
 ## DEMOGRAPHICS AND EMPLOYMENT IN THE UNITED STATES 
 
 # Download data
@@ -135,7 +248,7 @@ if(!file.exists("./data/CPS.csv")){
         
         fileURL<-"https://courses.edx.org/asset-v1:MITx+15.071x_2a+2T2015+type@asset+block/CPSData.csv"
         download.file(fileURL,destfile="./data/CPS.csv")
-        #include date of download
+ 
      
 }
 
