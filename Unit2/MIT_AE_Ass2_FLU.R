@@ -59,3 +59,38 @@ PredTest1[index]
 (FluTest$ILI[11] - PredTest1[11])/FluTest$ILI[11]
 
 #3.3
+SSE = sum((PredTest1-FluTest$ILI)^2)
+RMSE = sqrt(SSE/nrow(FluTest))
+RMSE
+
+#4.1
+library(zoo)
+        
+ILILag2 = lag(zoo(FluTrain$ILI), -2, na.pad=TRUE)
+FluTrain$ILILag2 = coredata(ILILag2)
+
+sum(is.na(ILILag2))
+
+#4.2
+plot(log(FluTrain$ILI),log(FluTrain$ILILag2))
+
+#4.3
+FluTrend2<-lm(log(ILI)~Queries+log(ILILag2),data=FluTrain)
+summary(FluTrend2)
+
+#5.1
+ILILag2 = lag(zoo(FluTest$ILI), -2, na.pad=TRUE)
+FluTest$ILILag2 = coredata(ILILag2)
+sum(is.na(ILILag2))
+
+#5.3
+FluTest$ILILag2[1] = FluTrain$ILI[nrow(FluTrain)-1]
+FluTest$ILILag2[1]
+FluTest$ILILag2[2] = FluTrain$ILI[nrow(FluTrain)]
+FluTest$ILILag2[2]
+
+#5.4
+PredTest2 = exp(predict(FluTrend2, newdata=FluTest))
+SSE2 = sum((PredTest2-FluTest$ILI)^2)
+RMSE2 = sqrt(SSE2/nrow(FluTest))
+RMSE2
