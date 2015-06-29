@@ -4,7 +4,7 @@
 # VIDEO 4
 
 # Read in the data
-stevens = read.csv("stevens.csv")
+stevens = read.csv("./data/stevens.csv")
 str(stevens)
 
 # Split the data
@@ -15,13 +15,13 @@ Train = subset(stevens, spl==TRUE)
 Test = subset(stevens, spl==FALSE)
 
 # Install rpart library
-install.packages("rpart")
+#install.packages("rpart")
 library(rpart)
-install.packages("rpart.plot")
+#install.packages("rpart.plot")
 library(rpart.plot)
 
 # CART model
-StevensTree = rpart(Reverse ~ Circuit + Issue + Petitioner + Respondent + LowerCourt + Unconst, data = Train, method="class", minbucket=25)
+StevensTree = rpart(Reverse ~ Circuit + Issue + Petitioner + Respondent + LowerCourt + Unconst, data = Train, method="class", minbucket=100)
 
 prp(StevensTree)
 
@@ -41,11 +41,13 @@ perf = performance(pred, "tpr", "fpr")
 plot(perf)
 
 
+as.numeric(performance(pred, "auc")@y.values)
+
 
 # VIDEO 5 - Random Forests
 
 # Install randomForest package
-install.packages("randomForest")
+#install.packages("randomForest")
 library(randomForest)
 
 # Build random forest model
@@ -56,21 +58,25 @@ Train$Reverse = as.factor(Train$Reverse)
 Test$Reverse = as.factor(Test$Reverse)
 
 # Try again
+set.seed(200)
 StevensForest = randomForest(Reverse ~ Circuit + Issue + Petitioner + Respondent + LowerCourt + Unconst, data = Train, ntree=200, nodesize=25 )
 
 # Make predictions
 PredictForest = predict(StevensForest, newdata = Test)
-table(Test$Reverse, PredictForest)
-(40+74)/(40+37+19+74)
+ctab<-table(Test$Reverse, PredictForest)
+#(40+74)/(40+37+19+74)
 
+ctab
+accuracy<-(ctab[1,1]+ctab[2,2])/sum(ctab)
+accuracy
 
 
 # VIDEO 6
 
 # Install cross-validation packages
-install.packages("caret")
+#install.packages("caret")
 library(caret)
-install.packages("e1071")
+#install.packages("e1071")
 library(e1071)
 
 # Define cross-validation experiment
@@ -83,8 +89,19 @@ train(Reverse ~ Circuit + Issue + Petitioner + Respondent + LowerCourt + Unconst
 # Create a new CART model
 StevensTreeCV = rpart(Reverse ~ Circuit + Issue + Petitioner + Respondent + LowerCourt + Unconst, data = Train, method="class", cp = 0.18)
 
+prp(StevensTreeCV)
+
 # Make predictions
 PredictCV = predict(StevensTreeCV, newdata = Test, type = "class")
-table(Test$Reverse, PredictCV)
+cvtab<-table(Test$Reverse, PredictCV)
+cvtab
+cvaccuracy<-(cvtab[1,1]+cvtab[2,2])/sum(cvtab)
+cvaccuracy
 (59+64)/(59+18+29+64)
 
+PredictROC = predict(StevensTreeCV, newdata = Test)
+PredictROC
+
+pred = prediction(PredictROC[,2], Test$Reverse)
+perf = performance(pred, "tpr", "fpr")
+plot(perf)
