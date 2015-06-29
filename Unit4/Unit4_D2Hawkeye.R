@@ -4,7 +4,7 @@
 # VIDEO 6
 
 # Read in the data
-Claims = read.csv("ClaimsData.csv")
+Claims = read.csv("./data/ClaimsData.csv")
 
 str(Claims)
 
@@ -22,6 +22,15 @@ ClaimsTrain = subset(Claims, spl==TRUE)
 
 ClaimsTest = subset(Claims, spl==FALSE)
 
+#qq
+#What is the average age of patients in the training set, ClaimsTrain?
+
+mean(ClaimsTrain$age)
+
+#What proportion of people in the training set (ClaimsTrain) had at least
+#one diagnosis code for diabetes?
+
+sum(ClaimsTrain$diabetes>0)/nrow(ClaimsTrain)
 
 # VIDEO 7
 
@@ -39,6 +48,18 @@ PenaltyMatrix
 as.matrix(table(ClaimsTest$bucket2009, ClaimsTest$bucket2008))*PenaltyMatrix
 
 sum(as.matrix(table(ClaimsTest$bucket2009, ClaimsTest$bucket2008))*PenaltyMatrix)/nrow(ClaimsTest)
+
+#qq
+ClaimsTest$CB1=1
+ct<-table(ClaimsTest$bucket2009, ClaimsTest$CB1)
+#accuracy
+ct[1]/nrow(ClaimsTest)
+
+#penalty
+sum(table(ClaimsTest$bucket2009, ClaimsTest$CB1)*PenaltyMatrix[,1])/nrow(ClaimsTest)
+
+sum(as.matrix(table(ClaimsTest$bucket2009, ClaimsTest$CB1))*PenaltyMatrix)/nrow(ClaimsTest)
+
 
 
 # VIDEO 8
