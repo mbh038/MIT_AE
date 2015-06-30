@@ -126,6 +126,7 @@ cp.grid = expand.grid( .cp = (0:10)*0.001)
 
 # Cross-validation
 tr = train(MEDV ~ LAT + LON + CRIM + ZN + INDUS + CHAS + NOX + RM + AGE + DIS + RAD + TAX + PTRATIO, data = train, method = "rpart", trControl = tr.control, tuneGrid = cp.grid)
+tr
 
 # Extract tree
 best.tree = tr$finalModel
