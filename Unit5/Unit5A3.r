@@ -83,12 +83,14 @@ library(rpart)
 library(rpart.plot)
 
 set.seed(123)
-spl = sample.split(emailsSparse$spam, 0.7)
+spl = sample.split(emailsSparse$spam, SplitRatio =0.7)
 train = subset(emailsSparse, spl == TRUE)
 test = subset(emailsSparse, spl == FALSE)
 
 #Train Logistic regression model
-spamLog<-glm(spam~.,family=binomial,data=train)
+spamLog<-glm(spam ~ . ,family=binomial,data=train)
 summary(spamLog)
 
-predLog<-predict(spamLog, newdata=test)
+predLog<-predict(spamLog,train,type="response")
+plot(predLog)
+max(predLog)
