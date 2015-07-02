@@ -82,15 +82,102 @@ library(caTools)
 library(rpart)
 library(rpart.plot)
 
+
 set.seed(123)
 spl = sample.split(emailsSparse$spam, SplitRatio =0.7)
 train = subset(emailsSparse, spl == TRUE)
 test = subset(emailsSparse, spl == FALSE)
 
+# Train each of the models
+
 #Train Logistic regression model
 spamLog<-glm(spam ~ . ,family=binomial,data=train)
 summary(spamLog)
+predTrainLog<-predict(spamLog,train,type="response")
 
-predLog<-predict(spamLog,train,type="response")
-plot(predLog)
-max(predLog)
+#plot(predLog)
+predTrainLog<-data.frame(predTrainLog)
+
+table(predTrainLog < 0.00001)
+table(predTrainLog > 0.99999)
+table(predTrainLog >= 0.00001 & predTrainLog <= 0.99999)
+
+# Train CART model
+spamCART = rpart(spam~., data=train, method="class")
+prp(spamCART)
+
+# Train RF model
+library(randomForest)
+set.seed(123)
+spamRF = randomForest(spam ~ ., data = train)
+
+##Get training set accuracies and AUC for each model
+
+#Logistic model
+#3.4 Training set accuracy of SpamLog, (@thr = 0.5)
+ct<-table(train$spam,predTrainLog >= 0.5)
+ct
+sum(diag(ct))/sum(ct)
+#3.5 Training set AUC of SpamLog
+library(ROCR)
+ROCRLogtrain = prediction(predTrainLog, train$spam)
+as.numeric(performance(ROCRLogtrain, "auc")@y.values)
+
+#CART model
+#3.6 Training set accuracy of spamCART
+predCART.prob<-predict(spamCART,train)[,2]
+ct<-table(train$spam,predCART.prob >= 0.5)
+ct
+sum(diag(ct))/sum(ct)
+#3.7 Training set AUC of SpamCART
+library(ROCR)
+ROCRCARTtrain = prediction(predCART.prob, train$spam)
+as.numeric(performance(ROCRCARTtrain, "auc")@y.values)
+
+#Random Forest model
+# 3.8  Training set accuracy of spamRF, using a threshold of 0.5 for predictions? 
+PredictForest.prob = predict(spamRF,train,type="prob")[,2]
+ctrf<-table(train$spam, PredictForest.prob>0.5)
+ctrf
+sum(diag(ctrf))/sum(ctrf)
+#3.9 Training set AUC of SpamRF
+library(ROCR)
+ROCRRFtrain = prediction(PredictForest.prob, train$spam)
+auc = as.numeric(performance(ROCRRFtrain, "auc")@y.values)
+auc
+
+## EVALUATING ON THE TEST SET  
+
+#Logistic model
+PredictLogTest <- predict(spamLog, newdata=test, type="response")
+ctrf<-table(test$spam, PredictLogTest>0.5)
+ctrf
+#accuracy of SpamLog on test set
+sum(diag(ctrf))/sum(ctrf)
+#AUC of SpamLog on test set
+ROCRLogtest = prediction(PredictLogTest, test$spam)
+as.numeric(performance(ROCRLogtest, "auc")@y.values)
+
+#CART model
+predCARTtest.prob = predict(spamCART, newdata=test)[,2]
+#accuracy of SpamCART on test set
+ct<-table(test$spam,predCARTtest.prob >= 0.5)
+ct
+sum(diag(ct))/sum(ct)
+#Test set AUC of SpamCART
+ROCRCARTtest = prediction(predCARTtest.prob, test$spam)
+as.numeric(performance(ROCRCARTtest, "auc")@y.values)
+
+#RF model
+PredictForest.Test.prob = predict(spamRF, newdata=test, type="prob")[,2]
+ctrf<-table(test$spam, PredictForest.Test.prob>0.5)
+ctrf
+#accuracy of SpamRF on test set
+sum(diag(ctrf))/sum(ctrf)
+#AUC of SpamRF on test set
+ROCRRFtest = prediction(PredictForest.Test.prob, test$spam)
+as.numeric(performance(ROCRRFtest, "auc")@y.values)
+
+## The Logistic model does best in accuracy and AUC on the training set, but worst
+## on the test set, where the RF model does best. The Logistic model is hugely
+## overfitted.
