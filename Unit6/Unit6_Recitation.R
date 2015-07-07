@@ -2,7 +2,7 @@
 
 # Video 2
 
-flower = read.csv("flower.csv", header=FALSE)
+flower = read.csv("./data/flower.csv", header=FALSE)
 str(flower)
 
 # Change the data type to matrix
@@ -24,7 +24,7 @@ distance = dist(flowerVector, method = "euclidean")
 # Video 3
 
 # Hierarchical clustering
-clusterIntensity = hclust(distance, method="ward")
+clusterIntensity = hclust(distance, method="ward.D")
 
 # Plot the dendrogram
 plot(clusterIntensity)
@@ -50,7 +50,7 @@ image(flowerMatrix,axes=FALSE,col=grey(seq(0,1,length=256)))
 
 # Let's try this with an MRI image of the brain
 
-healthy = read.csv("healthy.csv", header=FALSE)
+healthy = read.csv("./data/healthy.csv", header=FALSE)
 healthyMatrix = as.matrix(healthy)
 str(healthyMatrix)
 
@@ -58,12 +58,17 @@ str(healthyMatrix)
 image(healthyMatrix,axes=FALSE,col=grey(seq(0,1,length=256)))
 
 # Hierarchial clustering
-healthyVector = as.vector(healthyMatrix)
-distance = dist(healthyVector, method = "euclidean")
+healthyVector = as.vector(healthyMatrix) # of length n
+distance = dist(healthyVector, method = "euclidean") # gives an error - has n(n-1)/2 vvalues
 
 # We have an error - why?
 str(healthyVector)
 
+# because distance matrix would have to store 66 billion values
+# = number of unique distances between every pixel and every other pixel = n(n-1)/2
+# where n is number of pixels in healthyVector- too big!
+# hence cannot use heirarchical clustering.
+# Let's try k-means clustering instead!
 
 
 # Video 5
@@ -91,7 +96,7 @@ image(healthyClusters, axes = FALSE, col=rainbow(k))
 
 # Apply to a test image
  
-tumor = read.csv("tumor.csv", header=FALSE)
+tumor = read.csv("./data/tumor.csv", header=FALSE)
 tumorMatrix = as.matrix(tumor)
 tumorVector = as.vector(tumorMatrix)
 

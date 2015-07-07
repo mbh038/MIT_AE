@@ -3,7 +3,7 @@
 # Video 6
 
 # After following the steps in the video, load the data into R
-movies = read.table("movieLens.txt", header=FALSE, sep="|",quote="\"")
+movies = read.table("./data/movieLens.txt", header=FALSE, sep="|",quote="\"")
 
 str(movies)
 
@@ -24,7 +24,10 @@ movies = unique(movies)
 # Take a look at our data again:
 str(movies)
 
-
+##QQ
+table(movies$Comedy)
+table(movies$Western)
+table(movies$Romance & movies$Drama)
 
 # Video 7
 
@@ -32,7 +35,7 @@ str(movies)
 distances = dist(movies[2:20], method = "euclidean")
 
 # Hierarchical clustering
-clusterMovies = hclust(distances, method = "ward") 
+clusterMovies = hclust(distances, method = "ward.D") 
 
 # Plot the dendrogram
 plot(clusterMovies)
@@ -61,3 +64,7 @@ cluster2 = subset(movies, clusterGroups==2)
 # Look at the first 10 titles in this cluster:
 cluster2$Title[1:10]
 
+#QQ
+clusterGroups2 = cutree(clusterMovies, k = 2)
+head(clusterGroups2)
+movies[,6]
