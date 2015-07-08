@@ -101,7 +101,7 @@ tumorMatrix = as.matrix(tumor)
 tumorVector = as.vector(tumorMatrix)
 
 # Apply clusters from before to new image, using the flexclust package
-install.packages("flexclust")
+#install.packages("flexclust")
 library(flexclust)
 
 KMC.kcca = as.kcca(KMC, healthyVector)
