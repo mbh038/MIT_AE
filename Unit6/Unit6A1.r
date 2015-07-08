@@ -6,6 +6,8 @@
 
 ## July 2015
 
+## SEGMENTING IMAGES
+
 # load data into R
 dailykos<-read.csv("./data/dailykos.csv")
 str(dailykos)
@@ -46,13 +48,13 @@ nrow(Hierkos1)
 # etc...
 
 # pick the six most frequently occurring words in each cluster
-tail(sort(colMeans(kos1)))
-tail(sort(colMeans(kos2)))
-tail(sort(colMeans(kos3)))
-tail(sort(colMeans(kos4)))
-tail(sort(colMeans(kos5)))
-tail(sort(colMeans(kos6)))
-tail(sort(colMeans(kos7)))
+tail(sort(colMeans(Hierkos1)))
+tail(sort(colMeans(Hierkos2)))
+tail(sort(colMeans(Hierkos3)))
+tail(sort(colMeans(Hierkos4)))
+tail(sort(colMeans(Hierkos5)))
+tail(sort(colMeans(Hierkos6)))
+tail(sort(colMeans(Hierkos7)))
 
 ## k-means clustering
 
