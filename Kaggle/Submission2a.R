@@ -1,86 +1,23 @@
 ## KAGGLE COMPETITION
 
-## S2 - Random Forest
+## S2a - Logistic regression - significant variables only
 
-##
-##  A RANDOM FOREST MODEL
+# biddable+startprice+condition+storage+productline
+
+train AUC - 0.8626658
+test AUC  - 0.83625
+
+accuracy - 0.8162278
 
 # Read in data
 train = read.csv("./data/eBayiPadTrain.csv",stringsAsFactors=FALSE,na.strings="Unknown")
 test = read.csv("./data/eBayiPadTest.csv", stringsAsFactors=FALSE,na.strings="Unknown")
+
 train=na.omit(train)
 
 str(train)
 
 mean(train$sold)  # is <0.5 - so most are not sol
-
-
-# 3.1
-set.seed(1)
-trainSmall = train[sample(nrow(train), 200), ]
-
-library(randomForest)
-set.seed(1)
-soldForest = randomForest(sold ~ biddable+startprice+cellular+storage, data = trainSmall )
-
-PredictForest = predict(soldForest, newdata = test)
-ct50rf<-table(te$sold, PredictForest)
-ct50rf
-
-#accuracy on test set
-sum(diag(ct50rf))/sum(ct50rf)
-
-# 3.2 assessing importance of variables
-# - by number times used to initiate a split: more => more important
-vu = varUsed(soldForest, count=TRUE)
-vusorted = sort(vu, decreasing = FALSE, index.return = TRUE)
-dotchart(vusorted$x, names(over50kForest$forest$xlevels[vusorted$ix]))
-
-# 3.3 assessing importance of variables
-# by average reduction in impurity
-varImpPlot(over50kForest)
-
-## SELECTING CP BY CROSS-VALIDATION
-
-#4.1
-library(caret)
-library(e1071)
-
-# Number of folds
-set.seed(2)
-tr.control = trainControl(method = "cv", number = 10)
-
-#Test cp values from 0.002 to 0.1 in 0.002 increments
-cartGrid = expand.grid( .cp = seq(0.002,0.1,0.002))
-
-# Cross-validation
-tr = train(over50k ~ ., data = train, method = "rpart", trControl = tr.control, tuneGrid = cartGrid)
-tr
-
-# Extract tree
-best.tree = tr$finalModel
-prp(best.tree)
-
-# fit CART model with optimal cp = 0.002
-library(rpart)
-library(rpart.plot)
-
-CARTcp = rpart(over50k ~., data=train, method="class",cp=0.002)
-prp(CARTcp)
-
-# 2.4 accuracy
-PredictCARTcp = predict(CARTcp, newdata = test, type = "class")
-ctcp<-table(test$over50k, PredictCARTcp)
-sum(diag(ctcp))/sum(ctcp)
-##
-
-# biddable+startprice+condition+cellular+carrier+color+storage+productline
-
-train AUC - 0.8652028
-test AUC  - 0.83413
-
-accuracy - 0.8119291
-
 
 ## LOGISTIC REGRESSION MODEL
 
@@ -88,6 +25,11 @@ accuracy - 0.8119291
 # 1.1 Use training set to build logistic "Sold", yes or no, predictive model
 modelLog<-glm(sold~biddable+startprice+condition+cellular+carrier+color+storage+productline,family=binomial,data=train)
 summary(modelLog)
+
+# keep only significant variables
+modelLog<-glm(sold~biddable+startprice+condition+storage+productline,family=binomial,data=train)
+summary(modelLog)
+
 
 # 1.2 What is the accuracy of the model on the testing set? 
 # Use a threshold of 0.5. 
@@ -120,9 +62,9 @@ PredTest = predict(modelLog, newdata=test, type="response")
 
 # Let's prepare a submission file for Kaggle (for more about this, see the "Evaluation" page on the competition site):
 
-MySubmission2 = data.frame(UniqueID = test$UniqueID, Probability1 = PredTest)
+MySubmission2a = data.frame(UniqueID = test$UniqueID, Probability1 = PredTest)
 
-write.csv(MySubmission2, "./submissions/SubmissionSimpleLog2.csv", row.names=FALSE)
+write.csv(MySubmission2a, "./submissions/SubmissionSimpleLog2a.csv", row.names=FALSE)
 
 # You should upload the submission "SubmissionSimpleLog.csv" on the Kaggle website to use this as a submission to the competition
 
