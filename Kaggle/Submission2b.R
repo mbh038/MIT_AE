@@ -64,7 +64,10 @@ perfLog = performance(predLog, "tpr", "fpr")
 plot(perfLog)
 
 # And then make predictions on the test set:
+library(Hmisc)
 
+test$productline<-as.character(with(test,impute(productline, "iPad 2")))
+test$storage<-as.numeric(with(test,impute(storage, 16)))
 PredTest = predict(modelLog, newdata=test, type="response")
 
 # We can't compute the accuracy or AUC on the test set ourselves, since we don't have the dependent variable on the test set (you can compute it on the training set though!). 
@@ -74,8 +77,8 @@ PredTest = predict(modelLog, newdata=test, type="response")
 
 library(Hmisc)
 MySubmission2b = data.frame(UniqueID = test$UniqueID, Probability1 = PredTest)
-MySubmission2b$Probability1 <- as.numeric(with(MySubmission2b, impute(Probability1, 'random')))
-write.csv(MySubmission2b, "./submissions/SubmissionSimpleLog2b.csv", row.names=FALSE)
+# MySubmission2b$Probability1 <- as.numeric(with(MySubmission2b, impute(Probability1, 0.5)))
+write.csv(MySubmission2b, "./submissions/SubmissionSimpleLog2bimpute.csv", row.names=FALSE)
 
 # You should upload the submission "SubmissionSimpleLog.csv" on the Kaggle website to use this as a submission to the competition
 

@@ -23,22 +23,22 @@ library(randomForest)
 set.seed(1)
 soldForest = randomForest(sold ~ biddable+startprice+cellular+storage, data = trainSmall )
 
-PredictForest = predict(soldForest, newdata = test)
-ct50rf<-table(te$sold, PredictForest)
-ct50rf
+PredictForest = predict(soldForest, newdata = train)
+ctrf<-table(train$sold, PredictForest)
+ctrf
 
-#accuracy on test set
-sum(diag(ct50rf))/sum(ct50rf)
+#accuracy on train set
+sum(diag(ctrf))/sum(ctrf)
 
 # 3.2 assessing importance of variables
 # - by number times used to initiate a split: more => more important
 vu = varUsed(soldForest, count=TRUE)
 vusorted = sort(vu, decreasing = FALSE, index.return = TRUE)
-dotchart(vusorted$x, names(over50kForest$forest$xlevels[vusorted$ix]))
+dotchart(vusorted$x, names(soldForest$forest$xlevels[vusorted$ix]))
 
 # 3.3 assessing importance of variables
 # by average reduction in impurity
-varImpPlot(over50kForest)
+varImpPlot(soldForest)
 
 ## SELECTING CP BY CROSS-VALIDATION
 
@@ -54,7 +54,7 @@ tr.control = trainControl(method = "cv", number = 10)
 cartGrid = expand.grid( .cp = seq(0.002,0.1,0.002))
 
 # Cross-validation
-tr = train(over50k ~ ., data = train, method = "rpart", trControl = tr.control, tuneGrid = cartGrid)
+tr = train(sold ~ biddable+startprice+condition+storage+productline, data = train, method = "rpart", trControl = tr.control, tuneGrid = cartGrid)
 tr
 
 # Extract tree
@@ -65,14 +65,25 @@ prp(best.tree)
 library(rpart)
 library(rpart.plot)
 
-CARTcp = rpart(over50k ~., data=train, method="class",cp=0.002)
+CARTcp = rpart(sold ~biddable+startprice+condition+storage+productline, data=train, method="class",cp=0.002)
 prp(CARTcp)
 
 # 2.4 accuracy
-PredictCARTcp = predict(CARTcp, newdata = test, type = "class")
-ctcp<-table(test$over50k, PredictCARTcp)
+PredictCARTcp = predict(CARTcp, newdata = train, type = "class")
+ctcp<-table(train$sold, PredictCARTcp)
 sum(diag(ctcp))/sum(ctcp)
 ##
+
+library(ROCR)
+predRF = prediction(as.numeric(PredictCARTcp), train$sold)
+as.numeric(performance(predRF, "auc")@y.values)
+
+PredictCARTcptest = predict(CARTcp, newdata = test, type = "class")
+
+MySubmission3 = data.frame(UniqueID = test$UniqueID, Probability1 = PredictCARTcptest)
+
+write.csv(MySubmission3, "./submissions/SubmissionSimplecartcp.csv", row.names=FALSE)
+
 
 # biddable+startprice+condition+cellular+carrier+color+storage+productline
 
