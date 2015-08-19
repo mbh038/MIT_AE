@@ -50,7 +50,7 @@ HierAirClusterList = split(airlinesNorm, HierAirClusters)
 HierAir1<-HierAirClusterList[[1]]
 nrow(HierAir1)
 
-# Find mean values of each vaiable across the 5 clusters
+# Find mean values of each variable across the 5 clusters
 tapply(airlines$Balance, HierAirClusters, mean)
 tapply(airlines$QualMiles, HierAirClusters, mean)
 tapply(airlines$BonusMiles, HierAirClusters, mean)

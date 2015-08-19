@@ -6,7 +6,7 @@
 
 ## July 2015
 
-## SEGMENTING IMAGES
+## DOCUMENT CLUSTERING WITH DAILY KOS
 
 # load data into R
 dailykos<-read.csv("./data/dailykos.csv")
