@@ -131,6 +131,8 @@ ggmap(chicago) + geom_point(data = LatLonCounts, aes(x = Long, y = Lat, color = 
 # We can also use the geom_tile geometry
 ggmap(chicago) + geom_tile(data = LatLonCounts, aes(x = Long, y = Lat, alpha = Freq), fill="red")
 
+ggmap(chicago) + geom_contour(aes(x = Long, y = Lat,z=Freq))
+        
 # QQ
 LatLonCounts2=LatLonCounts[LatLonCounts$Freq>0,]
 nrow(LatLonCounts)
